@@ -167,6 +167,23 @@ static void test_rb_size_valid(void** state){
     assert_int_equal(rb_size(&rb), 1);
 }
 
+static void test_rb_size_wrap_around(void** state){
+    (void) state;
+    RingBuffer rb;
+    int storage[2];
+    assert_true(rb_init(&rb, storage, 2));
+    assert_int_equal(rb_size(&rb), 0);
+    assert_true(rb_push(&rb, 1));
+    assert_true(rb_push(&rb, 2));
+    assert_int_equal(rb_size(&rb), 2);
+    int out;
+    assert_true(rb_pop(&rb, &out));
+    assert_int_equal(out, 1);
+    assert_int_equal(rb_size(&rb), 1);
+    assert_true(rb_push(&rb, 3));
+    assert_int_equal(rb_size(&rb), 2);
+}
+
 int main(void){
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_rb_init_null_rb),
